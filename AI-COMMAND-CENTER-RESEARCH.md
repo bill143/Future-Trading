@@ -444,8 +444,13 @@ docker compose -f docker-compose.yml -p bisheng up -d
 
 ### FastGPT
 ```bash
-# Docker deployment available
-# Visit: https://fastgpt.io
+# Quick Docker deployment
+docker run -d --name fastgpt \
+  -p 3000:3000 \
+  -e MONGODB_URI=mongodb://mongo:27017/fastgpt \
+  -e OPENAI_API_KEY=your-key \
+  ghcr.io/labring/fastgpt:latest
+# For full deployment guide visit: https://fastgpt.io
 ```
 
 ### Astron Agent
@@ -544,6 +549,6 @@ Rankings prioritize:
 
 ---
 
-**Research Methodology**: This research was conducted by analyzing GitHub repositories with active development (commits within last 6 months), reviewing official documentation, examining architecture diagrams, and evaluating production readiness based on community adoption, feature completeness, and enterprise suitability.
+**Research Methodology**: This research was conducted by analyzing GitHub repositories with active development (all platforms have commits within the last 6 months, with most having commits within the last month), reviewing official documentation, examining architecture diagrams, and evaluating production readiness based on community adoption, feature completeness, and enterprise suitability.
 
 **Last Updated**: January 24, 2026
