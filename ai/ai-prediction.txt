@@ -1,3 +1,4 @@
+// Version: 1.0 | 2025-07-17 | Multi-TF trend prediction dashboard (EMA, RSI, MACD, confidence scoring)
 //@version=5
 indicator("AI Prediction — Trend + RSI + MACD + Call/Put + EMA + Prediction", overlay=true)
 
@@ -6,6 +7,9 @@ ema9Len   = input.int(9, "EMA 9 Length")
 ema18Len  = input.int(18, "EMA 18 Length")
 ema21Len  = input.int(21, "EMA 21 Length (Trend)")
 ema200Len = input.int(200, "EMA 200 Length (Long-Term)")
+predHour  = input.int(6, "Prediction Hour (0-23)", minval=0, maxval=23, group="Prediction Window")
+predMinStart = input.int(55, "Prediction Minute Start", minval=0, maxval=59, group="Prediction Window")
+predMinEnd   = input.int(59, "Prediction Minute End", minval=0, maxval=59, group="Prediction Window")
 
 // === EMA Calculations
 ema9   = ta.ema(close, ema9Len)
@@ -61,8 +65,8 @@ totalScore = trendScore + htfTrendScore + rsiScore + macdScore + cpScore + emaSc
 scorePercent = (totalScore + 6) * 100 / 12
 scoreLabel = totalScore > 1 ? "CALL " + str.tostring(scorePercent, "#.0") + "%" : totalScore < -1 ? "PUT " + str.tostring(scorePercent, "#.0") + "%" : "NEUTRAL " + str.tostring(scorePercent, "#.0") + "%"
 
-// === Prediction Logic (6:55:01–6:59:55 AM candle)
-isTargetMinute = (hour == 6 and minute >= 55 and minute <= 59)
+// === Prediction Logic (configurable time window)
+isTargetMinute = (hour == predHour and minute >= predMinStart and minute <= predMinEnd)
 predicted = close > open ? "CALL Prediction" : close < open ? "PUT Prediction" : "NEUTRAL"
 predictionLabel = isTargetMinute ? predicted : "WAITING"
 

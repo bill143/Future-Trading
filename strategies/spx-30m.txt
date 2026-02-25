@@ -1,3 +1,4 @@
+// Version: 1.0 | 2025-01-07 | SPX 30m consolidation breakout strategy (kernel smoothing, zigzag pivots)
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // @doan
 

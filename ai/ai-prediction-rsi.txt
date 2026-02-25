@@ -1,3 +1,4 @@
+// Version: 1.0 | 2025-07-17 | RSI-based options entry/exit with SPY volume proxy and S/R levels
 //@version=5
 indicator("AI Prediction • S-Call/Put + RSI • Volume Proxy + Support/Resistance", overlay=true)
 

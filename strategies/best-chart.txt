@@ -1,3 +1,4 @@
+// Version: 6.0 | 2025-01-04 | 1m ES pivot strategy (cascading EMA smoothing, sideways filter)
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // © donald
 

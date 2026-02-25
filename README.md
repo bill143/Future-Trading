@@ -1,6 +1,15 @@
 # Management members on TradingView and the Discord channel on your website.
 https://www.patreon.com/donaldit/shop/manage-members-on-tradingview-discord-415211
 
+## Project Structure
+
+```
+strategies/     — ES, NQ, SPX trading strategies
+indicators/     — Volume profile, trend, support/resistance indicators
+ai/             — AI-powered prediction scripts
+images/         — Chart screenshots and reference images
+```
+
 # NQ1M
 
 ![Alt text](https://github.com/dearvn/trading-futures-tradingview-script/raw/main/NQ1m.png?raw=true "NQ1 1M")
@@ -22,7 +31,7 @@ Api to integrate to Schwab: https://github.com/alexgolec/schwab-py
 
 # The $NQM2024 futures strategy is 70% accurate in a 5-minute timeframe
 
-Please access: 
+Please access:
 
 https://www.patreon.com/donaldit/shop/nqm2024-futures-trading-160775?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=productshare_fan&utm_content=join_link
 
@@ -31,7 +40,7 @@ https://www.patreon.com/donaldit/shop/nqm2024-futures-trading-160775?utm_medium=
 
 # $ES futures, $SPX strategy 80% accurate:
 
-Please access: 
+Please access:
 
 https://www.patreon.com/donaldit/shop/one-strategy-for-auto-trading-es-futures-155876?source=storefront
 
@@ -39,20 +48,20 @@ https://www.patreon.com/donaldit/shop/one-strategy-for-auto-trading-es-futures-1
 
 # Add indicator High Low Super for SPX, ES, ETH...
 
-supper-high-low-live.txt
+`indicators/supper-high-low-live.txt`
 
 ![Alt text](https://github.com/dearvn/trading-futures-tradingview-script/raw/main/high-low.png?raw=true "ETH")
 
 
 # Update new indicator trailing
 
-Lux-Trailing-BUY_SELL.txt
+`indicators/Lux-Trailing-BUY_SELL.txt`
 
 ![Alt text](https://github.com/dearvn/trading-futures-tradingview-script/raw/main/trailing.png?raw=true "SPX")
 
 
 # Updated new strategy
-nq-est-futres.txt
+`strategies/nq-est-futres.txt`
 
 # Trading $SPX options
 
@@ -70,7 +79,7 @@ If you win, please support me on Paypal: clickclone@gmail.com
 The best way to use this Indicator is when you encounter a signal, refresh it to confirm whether it has occurred or not. If it happens then go according to this signal.
 
 ```bash
-ES1M-BEST.txt
+strategies/ES1M-BEST.txt
 ```
 
 ![Alt text](https://github.com/dearvn/trading-futures-tradingview-script/raw/main/best.png?raw=true "ESU2023")
@@ -82,27 +91,27 @@ ES1M-BEST.txt
 
 ## Script Trading ES 20223
 
-Please use this one with timeframe 5M: `https://github.com/dearvn/trading-futures-tradingview-script/blob/main/ESH2023-5M.txt`
+Please use this one with timeframe 5M: `strategies/ESH2023-5M.txt`
 
 ## Trading GOLD
- 
-Using script `GOLD_UZ_OZ.txt`
+
+Using script `indicators/GOLD_UZ_OZ.txt`
 
 ![Alt text](https://github.com/dearvn/trading-futures-tradingview-script/raw/main/gold.png?raw=true "Gold")
 
 
-## Using the latest version of `es-futures-no-repaint-v1.x.txt` to alert on 1M ES without REPAINT time trading from 6:30AM to 12:30 PM UTC-8
+## Using the latest version of `strategies/es-futures-no-repaint-v1.x.txt` to alert on 1M ES without REPAINT time trading from 6:30AM to 12:30 PM UTC-8
 
-Alert to auto trade using timeframe 1M: `es-futures-no-repaint-v1.x.txt`
+Alert to auto trade using timeframe 1M: `strategies/es-futures-no-repaint-v1.x.txt`
 
-Review history timeframe 30s: `es-futures-repaint-30s.txt`
+Review history timeframe 30s: `strategies/es-futures-repaint-30s.txt`
 
 ![Alt text](https://github.com/dearvn/trading-futures-tradingview-script/raw/main/alerts.png?raw=true "alerts")
 
 
 ## Newbie
 
-**Use `color-trend-lite.txt` to trade easily**
+**Use `indicators/color-trend-lite.txt` to trade easily**
 
 **BLUE: trend up**
 
@@ -114,7 +123,7 @@ Review history timeframe 30s: `es-futures-repaint-30s.txt`
 
 ## Strategy ES 1M
 
-using: `best-strategy-es-1m.txt`
+using: `strategies/best-strategy-es-1m.txt`
 
 ![Alt text](https://github.com/dearvn/trading-futures-tradingview-script/raw/main/strategy-es.png?raw=true "strategy-es")
 
@@ -140,7 +149,7 @@ Ref: https://github.com/dearvn/tradingview-pinscript-futures-binance
 I like a cup of coffee at https://www.patreon.com/donaldit
 
 ## IMPORTANT
-* Currently, I am trading on ```trade-futures.txt``` script
+* Currently, I am trading on ```strategies/trade-futures.txt``` script
 Belong to ticker and timeframe, I set input IN and input OUT
 Backtest on timeframe 5M
 * ES: input IN = 5, input OUT = 3
@@ -149,8 +158,8 @@ Backtest on timeframe 5M
 Enjoy daily trading Futures and if this script is good please me coffee (https://www.patreon.com/donaldit)
 or need implement a script donald.nguyen.it@gmail.com
 
-## WEAK MARKET 
-* I implement logic to trade when market is weak this time let use script ```best-indicator.txt```
+## WEAK MARKET
+* I implement logic to trade when market is weak this time let use script ```indicators/best-indicator.txt```
 
 **Using:**
 *GC = Great Call (exit PUT beforce CALL)
@@ -159,12 +168,12 @@ or need implement a script donald.nguyen.it@gmail.com
 
 ![Alt text](https://github.com/dearvn/trading-futures-tradingview-script/raw/main/best-indicator.png?raw=true "best-indicator.png")
 
-## SWING 
-Using indicator `swing.txt` to exit or entry CALL PUT
+## SWING
+Using indicator `indicators/swing.txt` to exit or entry CALL PUT
 ![Alt text](https://github.com/dearvn/trading-futures-tradingview-script/raw/main/swing.png?raw=true "swing.png")
 
 ## MARKET CRASH
-* I implement logic to trade when market crash this time let use script ```win-99.txt```
+* I implement logic to trade when market crash this time let use script ```strategies/win-99.txt```
 
 ![Alt text](https://github.com/dearvn/trading-futures-tradingview-script/raw/main/win100.png?raw=true "WIN100%")
 
@@ -201,4 +210,3 @@ For example, when "IN" signal notify I can CALL on Tradovate platform.
 
 * 2022-09-06 Gain/Loss in evidence
 ![Alt text](https://github.com/dearvn/trading-futures-tradingview-script/raw/main/nq-2022-09-06_at_11.02.17.png?raw=true "NQ1 nq-2022-09-06 at 11.02.17")
-
