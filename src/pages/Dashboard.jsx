@@ -14,6 +14,7 @@ import {
 import StatsCard from '../components/StatsCard.jsx'
 import StrategyCard from '../components/StrategyCard.jsx'
 import { strategies, getFeatured, CATEGORIES, STATS } from '../data/strategies.js'
+import { usePageTitle } from '../hooks/usePageTitle.js'
 
 const CATEGORY_ICONS = {
   futures: TrendingUp,
@@ -24,6 +25,7 @@ const CATEGORY_ICONS = {
 }
 
 export default function Dashboard() {
+  usePageTitle('Dashboard')
   const featured = getFeatured()
 
   return (

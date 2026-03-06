@@ -40,19 +40,31 @@
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
   }
+
+  /* Globally visible focus rings — only when keyboard navigating */
+  :focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Remove default outline when mouse is used */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
 }
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-blue hover:bg-brand-blue-light text-white font-medium text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2 focus:ring-offset-dark-900;
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-blue hover:bg-brand-blue-light text-white font-medium text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-dark-500 hover:bg-dark-400 border border-dark-400 hover:border-brand-blue text-gray-200 font-medium text-sm transition-all duration-200;
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-dark-500 hover:bg-dark-400 border border-dark-400 hover:border-brand-blue text-gray-200 font-medium text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg text-gray-400 hover:text-gray-100 hover:bg-dark-600 font-medium text-sm transition-all duration-200;
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg text-gray-400 hover:text-gray-100 hover:bg-dark-600 font-medium text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue;
   }
 
   .card {
@@ -60,7 +72,7 @@
   }
 
   .card-hover {
-    @apply card hover:border-dark-400 hover:bg-dark-700 transition-all duration-200 cursor-pointer;
+    @apply card hover:border-dark-400 hover:bg-dark-700 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900;
   }
 
   .badge {
@@ -200,11 +212,29 @@
 
 /* Live indicator dot */
 .live-dot {
-  @apply w-2 h-2 rounded-full bg-brand-green;
+  @apply w-2 h-2 rounded-full;
   animation: livePulse 2s ease-in-out infinite;
 }
 
 @keyframes livePulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(0, 192, 135, 0.7); }
   70% { box-shadow: 0 0 0 6px rgba(0, 192, 135, 0); }
+}
+
+/* Respect reduced-motion preference — disable all animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ticker-scroll {
+    animation: none;
+  }
+  .live-dot {
+    animation: none;
+  }
 }

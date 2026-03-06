@@ -1,6 +1,8 @@
 import { ExternalLink, Github, Heart, Mail, Coffee, BookOpen, Zap, TrendingUp, Shield } from 'lucide-react'
+import { usePageTitle } from '../hooks/usePageTitle.js'
 
 export default function AboutPage() {
+  usePageTitle('About')
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
       {/* Hero */}

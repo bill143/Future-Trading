@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { Search, Filter, X, TrendingUp, BarChart2, Activity, Cpu, Zap, ChevronDown } from 'lucide-react'
 import StrategyCard from '../components/StrategyCard.jsx'
 import { strategies, CATEGORIES } from '../data/strategies.js'
+import { usePageTitle } from '../hooks/usePageTitle.js'
 
 const CATEGORY_ICONS = {
   futures: TrendingUp,
@@ -20,11 +21,12 @@ const SORT_OPTIONS = [
 ]
 
 export default function StrategiesPage() {
+  usePageTitle('Strategy Library')
   const [searchParams, setSearchParams] = useSearchParams()
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('featured')
-  const [showFilters, setShowFilters] = useState(false)
   const activeCategory = searchParams.get('category') || 'all'
+  const searchRef = useRef(null)
 
   const setCategory = (cat) => {
     if (cat === 'all') {
@@ -34,6 +36,19 @@ export default function StrategiesPage() {
     }
     setSearchParams(searchParams)
   }
+
+  // Keyboard shortcut: Cmd/Ctrl + K focuses the search input
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        searchRef.current?.focus()
+        searchRef.current?.select()
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [])
 
   const filtered = useMemo(() => {
     let list = [...strategies]
@@ -83,25 +98,33 @@ export default function StrategiesPage() {
       {/* Search + Sort row */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" aria-hidden="true" />
+          <label htmlFor="strategy-search" className="sr-only">Search strategies</label>
           <input
-            type="text"
-            placeholder="Search by name, ticker, tag…"
+            id="strategy-search"
+            ref={searchRef}
+            type="search"
+            placeholder="Search by name, ticker, tag… (⌘K)"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="input-field pl-10"
+            aria-label="Search strategies by name, ticker, or tag"
+            autoComplete="off"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+              aria-label="Clear search"
             >
-              <X size={14} />
+              <X size={14} aria-hidden="true" />
             </button>
           )}
         </div>
         <div className="relative">
+          <label htmlFor="sort-select" className="sr-only">Sort strategies</label>
           <select
+            id="sort-select"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             className="input-field pr-8 appearance-none cursor-pointer sm:w-44"
@@ -110,15 +133,17 @@ export default function StrategiesPage() {
               <option key={o.value} value={o.value}>{o.label}</option>
             ))}
           </select>
-          <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+          <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" aria-hidden="true" />
         </div>
       </div>
 
       {/* Category filter pills */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      <div className="flex flex-wrap gap-2 mb-8" role="group" aria-label="Filter by category">
         <button
           onClick={() => setCategory('all')}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+          aria-pressed={activeCategory === 'all'}
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-200
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue ${
             activeCategory === 'all'
               ? 'bg-brand-blue text-white'
               : 'bg-dark-700 border border-dark-600 text-gray-400 hover:text-gray-100 hover:border-dark-400'
@@ -139,15 +164,18 @@ export default function StrategiesPage() {
           }
           const inactiveClass = 'bg-dark-700 border border-dark-600 text-gray-400 hover:text-gray-100 hover:border-dark-400'
           const activeClass = colorMap[cat.color] + ' border'
+          const isActive = activeCategory === cat.id
           return (
             <button
               key={cat.id}
               onClick={() => setCategory(cat.id)}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-                activeCategory === cat.id ? activeClass : inactiveClass
+              aria-pressed={isActive}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-200
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue ${
+                isActive ? activeClass : inactiveClass
               }`}
             >
-              <Icon size={12} />
+              <Icon size={12} aria-hidden="true" />
               {cat.shortLabel}
               <span className="text-xs opacity-70">({count})</span>
             </button>
@@ -157,7 +185,12 @@ export default function StrategiesPage() {
 
       {/* Results count */}
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-500">
+        <p
+          className="text-sm text-gray-500"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {filtered.length === strategies.length
             ? `All ${filtered.length} strategies`
             : `${filtered.length} of ${strategies.length} strategies`}
@@ -166,9 +199,10 @@ export default function StrategiesPage() {
         {(search || activeCategory !== 'all') && (
           <button
             onClick={() => { setSearch(''); setCategory('all') }}
-            className="text-xs text-brand-blue hover:text-brand-blue-light flex items-center gap-1"
+            className="text-xs text-brand-blue hover:text-brand-blue-light flex items-center gap-1
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue rounded"
           >
-            <X size={11} /> Clear filters
+            <X size={11} aria-hidden="true" /> Clear filters
           </button>
         )}
       </div>

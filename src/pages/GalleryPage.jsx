@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { ZoomIn, X, TrendingUp, TrendingDown, DollarSign, Calendar } from 'lucide-react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { ZoomIn, X, TrendingUp, TrendingDown, DollarSign, Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
+import { usePageTitle } from '../hooks/usePageTitle.js'
 
 const SCREENSHOTS = [
   {
@@ -164,16 +165,150 @@ const SCREENSHOTS = [
 
 const ALL_CATS = ['All', ...new Set(SCREENSHOTS.map((s) => s.category))]
 
+/** Accessible Lightbox with focus-trap, keyboard navigation, and ARIA attributes */
+function Lightbox({ item, items, onClose, onNavigate }) {
+  const dialogRef = useRef(null)
+  const closeButtonRef = useRef(null)
+
+  const currentIndex = items.findIndex((i) => i.file === item.file)
+  const hasPrev = currentIndex > 0
+  const hasNext = currentIndex < items.length - 1
+
+  // Focus close button when lightbox opens
+  useEffect(() => {
+    closeButtonRef.current?.focus()
+  }, [item])
+
+  // Keyboard: Esc = close, Arrow keys = navigate
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') { onClose(); return }
+      if (e.key === 'ArrowLeft' && hasPrev) onNavigate(currentIndex - 1)
+      if (e.key === 'ArrowRight' && hasNext) onNavigate(currentIndex + 1)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onClose, onNavigate, currentIndex, hasPrev, hasNext])
+
+  // Prevent body scroll while open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
+  // Focus trap: keep Tab inside the dialog
+  const handleTrap = useCallback((e) => {
+    if (!dialogRef.current) return
+    const focusable = dialogRef.current.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+    if (e.key === 'Tab') {
+      if (e.shiftKey ? document.activeElement === first : document.activeElement === last) {
+        e.preventDefault()
+        ;(e.shiftKey ? last : first)?.focus()
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleTrap)
+    return () => document.removeEventListener('keydown', handleTrap)
+  }, [handleTrap])
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Image: ${item.title}`}
+        className="max-w-5xl w-full bg-dark-800 rounded-2xl border border-dark-600 overflow-hidden shadow-2xl relative"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <button
+          ref={closeButtonRef}
+          onClick={onClose}
+          className="absolute top-3 right-3 z-10 text-gray-400 hover:text-white p-2 rounded-lg hover:bg-dark-700
+            transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue"
+          aria-label="Close image viewer"
+        >
+          <X size={20} aria-hidden="true" />
+        </button>
+
+        {/* Prev / Next navigation */}
+        {hasPrev && (
+          <button
+            onClick={() => onNavigate(currentIndex - 1)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-gray-300 hover:text-white p-2 rounded-lg
+              bg-dark-800/80 hover:bg-dark-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue"
+            aria-label="Previous image"
+          >
+            <ChevronLeft size={20} aria-hidden="true" />
+          </button>
+        )}
+        {hasNext && (
+          <button
+            onClick={() => onNavigate(currentIndex + 1)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 text-gray-300 hover:text-white p-2 rounded-lg
+              bg-dark-800/80 hover:bg-dark-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue"
+            aria-label="Next image"
+          >
+            <ChevronRight size={20} aria-hidden="true" />
+          </button>
+        )}
+
+        <img
+          src={`/screenshots/${item.file}`}
+          alt={item.title}
+          className="w-full object-contain max-h-[70vh]"
+          loading="lazy"
+          decoding="async"
+        />
+        <div className="p-4 flex items-start justify-between gap-4">
+          <div>
+            <h3 className="font-semibold text-white mb-1">{item.title}</h3>
+            <p className="text-sm text-gray-400">{item.description}</p>
+            {items.length > 1 && (
+              <p className="text-xs text-gray-600 mt-1">{currentIndex + 1} / {items.length}</p>
+            )}
+          </div>
+          <span className="badge-gray text-xs flex-shrink-0">{item.category}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function GalleryPage() {
+  usePageTitle('Trading Gallery')
   const [activeFilter, setActiveFilter] = useState('All')
-  const [lightbox, setLightbox] = useState(null)
+  const [lightboxIndex, setLightboxIndex] = useState(null)
   const [brokenImages, setBrokenImages] = useState(new Set())
+  // Store ref to the button that opened the lightbox so focus can be restored
+  const lastFocusedRef = useRef(null)
 
   const filtered =
     activeFilter === 'All' ? SCREENSHOTS : SCREENSHOTS.filter((s) => s.category === activeFilter)
 
   const handleImageError = (file) => {
     setBrokenImages((prev) => new Set([...prev, file]))
+  }
+
+  const openLightbox = (index, buttonEl) => {
+    lastFocusedRef.current = buttonEl
+    setLightboxIndex(index)
+  }
+
+  const closeLightbox = () => {
+    setLightboxIndex(null)
+    // Restore focus to the card that triggered the lightbox
+    lastFocusedRef.current?.focus()
   }
 
   return (
@@ -195,7 +330,7 @@ export default function GalleryPage() {
           { icon: TrendingUp, label: 'Markets', value: 'ES · NQ · SPX', color: 'text-brand-purple', bg: 'bg-brand-purple/10 border-brand-purple/20' },
         ].map((item) => (
           <div key={item.label} className={`card flex items-center gap-3 border ${item.bg}`}>
-            <item.icon size={20} className={item.color} />
+            <item.icon size={20} className={item.color} aria-hidden="true" />
             <div>
               <div className={`text-lg font-bold ${item.color}`}>{item.value}</div>
               <div className="text-xs text-gray-500">{item.label}</div>
@@ -205,12 +340,14 @@ export default function GalleryPage() {
       </div>
 
       {/* Category filter */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6" role="group" aria-label="Filter by category">
         {ALL_CATS.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveFilter(cat)}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+            aria-pressed={activeFilter === cat}
+            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-200
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue ${
               activeFilter === cat
                 ? 'bg-brand-blue text-white'
                 : 'bg-dark-700 border border-dark-600 text-gray-400 hover:text-gray-100 hover:border-dark-400'
@@ -221,13 +358,22 @@ export default function GalleryPage() {
         ))}
       </div>
 
+      {/* Result count (live region for screen readers) */}
+      <p className="sr-only" role="status" aria-live="polite">
+        {filtered.length} image{filtered.length !== 1 ? 's' : ''} shown
+        {activeFilter !== 'All' ? ` for category ${activeFilter}` : ''}
+      </p>
+
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filtered.map((item, idx) => (
           <button
             key={item.file}
-            onClick={() => setLightbox(item)}
-            className="group relative bg-dark-800 rounded-xl border border-dark-600 hover:border-dark-400 overflow-hidden text-left transition-all duration-200 hover:shadow-xl hover:shadow-black/30"
+            onClick={(e) => openLightbox(idx, e.currentTarget)}
+            aria-label={`View ${item.title} — ${item.category}`}
+            className="group relative bg-dark-800 rounded-xl border border-dark-600 hover:border-dark-400 overflow-hidden text-left
+              transition-all duration-200 hover:shadow-xl hover:shadow-black/30
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900"
           >
             <div className="aspect-video bg-dark-700 relative overflow-hidden">
               {brokenImages.has(item.file) ? (
@@ -237,13 +383,16 @@ export default function GalleryPage() {
               ) : (
                 <img
                   src={`/screenshots/${item.file}`}
-                  alt={item.title}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   onError={() => handleImageError(item.file)}
                 />
               )}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                <ZoomIn size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ZoomIn size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
               </div>
               {item.gain && (
                 <div className={`absolute top-2 right-2 text-xs font-bold px-2 py-1 rounded ${item.up ? 'bg-brand-green text-dark-900' : 'bg-brand-red text-white'}`}>
@@ -264,36 +413,14 @@ export default function GalleryPage() {
         ))}
       </div>
 
-      {/* Lightbox */}
-      {lightbox && (
-        <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 animate-fade-in"
-          onClick={() => setLightbox(null)}
-        >
-          <button
-            className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-lg hover:bg-dark-700 transition-colors"
-            onClick={() => setLightbox(null)}
-          >
-            <X size={20} />
-          </button>
-          <div
-            className="max-w-5xl w-full bg-dark-800 rounded-2xl border border-dark-600 overflow-hidden shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={`/screenshots/${lightbox.file}`}
-              alt={lightbox.title}
-              className="w-full object-contain max-h-[70vh]"
-            />
-            <div className="p-4 flex items-start justify-between gap-4">
-              <div>
-                <h3 className="font-semibold text-white mb-1">{lightbox.title}</h3>
-                <p className="text-sm text-gray-400">{lightbox.description}</p>
-              </div>
-              <span className="badge-gray text-xs flex-shrink-0">{lightbox.category}</span>
-            </div>
-          </div>
-        </div>
+      {/* Accessible Lightbox */}
+      {lightboxIndex !== null && (
+        <Lightbox
+          item={filtered[lightboxIndex]}
+          items={filtered}
+          onClose={closeLightbox}
+          onNavigate={(i) => setLightboxIndex(i)}
+        />
       )}
     </div>
   )

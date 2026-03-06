@@ -15,6 +15,7 @@ import {
 import CodeViewer from '../components/CodeViewer.jsx'
 import StrategyCard from '../components/StrategyCard.jsx'
 import { getById, strategies, CATEGORIES } from '../data/strategies.js'
+import { usePageTitle } from '../hooks/usePageTitle.js'
 
 const CATEGORY_ICONS = {
   futures: TrendingUp,
@@ -61,6 +62,7 @@ export default function StrategyDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const strategy = getById(id)
+  usePageTitle(strategy?.name ?? 'Strategy not found')
 
   if (!strategy) {
     return (
@@ -138,6 +140,8 @@ export default function StrategyDetail() {
                   src={`/screenshots/${strategy.screenshot}`}
                   alt={strategy.name}
                   className="w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                   onError={(e) => { e.target.parentNode.style.display = 'none' }}
                 />
               </div>
