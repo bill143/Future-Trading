@@ -167,9 +167,14 @@ const ALL_CATS = ['All', ...new Set(SCREENSHOTS.map((s) => s.category))]
 export default function GalleryPage() {
   const [activeFilter, setActiveFilter] = useState('All')
   const [lightbox, setLightbox] = useState(null)
+  const [brokenImages, setBrokenImages] = useState(new Set())
 
   const filtered =
     activeFilter === 'All' ? SCREENSHOTS : SCREENSHOTS.filter((s) => s.category === activeFilter)
+
+  const handleImageError = (file) => {
+    setBrokenImages((prev) => new Set([...prev, file]))
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
@@ -225,15 +230,18 @@ export default function GalleryPage() {
             className="group relative bg-dark-800 rounded-xl border border-dark-600 hover:border-dark-400 overflow-hidden text-left transition-all duration-200 hover:shadow-xl hover:shadow-black/30"
           >
             <div className="aspect-video bg-dark-700 relative overflow-hidden">
-              <img
-                src={`/screenshots/${item.file}`}
-                alt={item.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                onError={(e) => {
-                  e.target.src = ''
-                  e.target.parentNode.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-700 text-sm">No preview</div>`
-                }}
-              />
+              {brokenImages.has(item.file) ? (
+                <div className="w-full h-full flex items-center justify-center text-gray-700 text-sm">
+                  No preview
+                </div>
+              ) : (
+                <img
+                  src={`/screenshots/${item.file}`}
+                  alt={item.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={() => handleImageError(item.file)}
+                />
+              )}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                 <ZoomIn size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
