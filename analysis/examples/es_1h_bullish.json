@@ -1,0 +1,79 @@
+{
+  "symbol": "ES",
+  "timeframe": "1h",
+  "timestamp": "2024-11-01T15:00:00Z",
+  "consensus_bias": "bullish",
+  "confidence": 0.72,
+  "agents": [
+    {
+      "agent": "technical_analyst",
+      "bias": "bullish",
+      "confidence": 0.78,
+      "signals": [
+        "RSI at 58 – approaching but not overbought",
+        "MACD bullish crossover confirmed",
+        "Price above 20 EMA, 50 EMA, and 200 SMA (strong uptrend alignment)",
+        "Stochastic K=65 – bullish momentum"
+      ],
+      "key_levels": {
+        "support": [5480.0, 5455.0, 5420.0],
+        "resistance": [5540.0, 5570.0, 5600.0]
+      },
+      "analysis": "ES is in a strong bullish posture on the 1h chart. MACD crossed bullish two bars ago with rising histogram bars, confirming momentum. RSI is healthy at 58 – not overbought – with room to run toward 70+. The 20 EMA is above the 50 EMA, which is above the 200 SMA, forming the classic bullish fan. The most recent bar closed decisively above the 5500 psychological level with above-average volume."
+    },
+    {
+      "agent": "market_structure_analyst",
+      "bias": "bullish",
+      "confidence": 0.80,
+      "structure": "uptrend",
+      "signals": [
+        "Higher high at 5535 printed above prior swing high at 5510",
+        "Higher low at 5482 holds above prior swing low at 5455",
+        "Clean higher highs and higher lows sequence intact",
+        "No bearish engulfing or structure break present"
+      ],
+      "key_levels": {
+        "support": [5482.0, 5455.0],
+        "resistance": [5535.0, 5560.0]
+      },
+      "analysis": "Market structure is firmly in an uptrend. The sequence HH→HL→HH is intact. The last swing low at 5482 is holding, and price has just made a new swing high above 5535. Trend is clean with no signs of a lower-high formation. The next structural target is the 5560 prior high and then the 5600 round number."
+    },
+    {
+      "agent": "sentiment_analyst",
+      "bias": "bullish",
+      "sentiment": "risk_on",
+      "confidence": 0.60,
+      "signals": [
+        "VIX at 14.8 – low volatility / complacency, risk-on environment",
+        "News sentiment mildly positive (tech earnings beat expectations)",
+        "No major macro catalyst in next 48 hours"
+      ],
+      "analysis": "Market sentiment is risk-on. VIX below 15 indicates low fear and broad institutional buying. Recent tech earnings have come in above consensus, supporting NQ and ES. No FOMC or NFP events within 48 hours remove near-term headline risk."
+    },
+    {
+      "agent": "fundamental_analyst",
+      "bias": "neutral",
+      "backdrop": "uncertain",
+      "confidence": 0.55,
+      "signals": [
+        "Fed Funds Rate at 5.25% – restrictive but expected to cut in Q1",
+        "CPI ticking down: 3.2% YoY – disinflation narrative intact",
+        "Unemployment at 3.8% – labor market still tight",
+        "10Y-2Y yield curve still inverted at -25bps (recession watch)"
+      ],
+      "analysis": "The macro backdrop is mixed. Disinflation is progressing and rate-cut expectations support equity valuations. However, the inverted yield curve and elevated Fed Funds rate present a medium-term headwind. For the near-term (1-5 days) the macro environment does not present an immediate catalyst for selling."
+    }
+  ],
+  "key_levels": {
+    "support": [5482.0, 5455.0, 5420.0],
+    "resistance": [5535.0, 5560.0, 5600.0]
+  },
+  "trading_signal": {
+    "action": "buy",
+    "entry": 5505.0,
+    "stop_loss": 5482.0,
+    "take_profit": 5551.0,
+    "risk_reward": 2.0
+  },
+  "reasoning": "Three of four agents are bullish with high confidence. Market structure is in a clean uptrend (HH/HL sequence intact). Technical indicators confirm momentum with MACD bullish crossover, price above all three moving averages, and RSI not yet overbought. Sentiment is risk-on with VIX below 15. Fundamental backdrop is neutral short-term. Combined confidence of 72% exceeds the 65% auto-trade threshold. Entry near 5505 offers a clean 2:1 risk/reward to the next structural target at 5551, with a stop below the most recent higher low at 5482."
+}
