@@ -26,5 +26,5 @@ export default async function handler(req, res) {
     return res.status(401).json({ status: "error", message: "Unauthorized" });
   }
 
-  return res.status(200).json({ status: "ok", trades: getTrades() });
+  return res.status(200).json({ status: "ok", trades: await getTrades() });
 }

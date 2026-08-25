@@ -1,10 +1,9 @@
 /**
  * @fileoverview Tradovate broker integration for futures order placement.
  *
- * Supports ES, NQ, and GC front-month contracts.
- * Uses the Tradovate REST API v1 with Bearer-token authentication.
- * Token is cached and refreshed automatically; a promise-lock prevents
- * concurrent refresh races.
+ * Contract symbols are supplied by the caller (resolved via utils/contracts.js)
+ * rather than looked up from a hardcoded map — the previous CONTRACT_MAP was
+ * pinned to June-2025 expiries and could not place a micro contract at all.
  *
  * Environment variables required:
  *   TRADOVATE_USERNAME, TRADOVATE_PASSWORD, TRADOVATE_APP_ID,
@@ -12,43 +11,30 @@
  *   TRADOVATE_ACCOUNT_ID, TRADOVATE_DEMO
  */
 
-/** Base URL switches between demo and live depending on TRADOVATE_DEMO env var. */
+/** Base URL switches between demo and live depending on TRADOVATE_DEMO. */
 const BASE_URL =
   process.env.TRADOVATE_DEMO === "true"
     ? "https://demo.tradovateapi.com/v1"
     : "https://live.tradovateapi.com/v1";
 
-/**
- * Front-month contract symbols for supported tickers.
- * @type {Record<string, string>}
- */
-const CONTRACT_MAP = {
-  ES: "ESM5",
-  NQ: "NQM5",
-  GC: "GCM5",
-};
-
-/** @type {{ accessToken: string|null, expiry: number }} Cached token state */
+/** @type {{accessToken: string|null, expiry: number}} */
 let tokenCache = { accessToken: null, expiry: 0 };
 
-/** @type {Promise<string>|null} In-flight token request promise (prevents concurrent refreshes) */
+/** @type {Promise<string>|null} In-flight token request (prevents refresh races). */
 let pendingTokenRequest = null;
 
 /**
- * Obtain a valid Tradovate access token, using the cached value when still valid.
+ * Obtain a valid Tradovate access token, reusing the cached value when fresh.
  *
- * @returns {Promise<string>} A valid Bearer access token.
+ * @returns {Promise<string>}
  * @throws {Error} If authentication fails.
  */
 async function getAccessToken() {
   const now = Date.now();
 
-  // Return cached token if it is still valid (with a 60-second safety margin).
   if (tokenCache.accessToken && now < tokenCache.expiry - 60_000) {
     return tokenCache.accessToken;
   }
-
-  // If a refresh is already in progress, wait for it instead of making a duplicate request.
   if (pendingTokenRequest) {
     return pendingTokenRequest;
   }
@@ -69,24 +55,20 @@ async function getAccessToken() {
       });
 
       if (!response.ok) {
-        const body = await response.text();
-        throw new Error(`Tradovate auth failed (${response.status}): ${body}`);
+        throw new Error(`Tradovate auth failed (${response.status}): ${await response.text()}`);
       }
 
       const data = await response.json();
-
       if (!data["p-token"]) {
         throw new Error("Tradovate auth response missing p-token");
       }
 
       tokenCache = {
         accessToken: data["p-token"],
-        // expiration-time is an ISO 8601 string
         expiry: data["expiration-time"]
           ? new Date(data["expiration-time"]).getTime()
-          : now + 60 * 60 * 1000, // default 1-hour TTL
+          : now + 60 * 60 * 1000,
       };
-
       return tokenCache.accessToken;
     } finally {
       pendingTokenRequest = null;
@@ -97,119 +79,102 @@ async function getAccessToken() {
 }
 
 /**
- * Place a futures order on Tradovate.
+ * Place a futures order.
  *
- * @param {"buy"|"sell"|"close"} action  - Trade direction.
- * @param {string}               ticker  - Instrument ticker (ES, NQ, GC).
- * @param {number}               qty     - Number of contracts.
- * @param {"Market"|"Limit"}     orderType - Order type.
- * @param {number|undefined}     price   - Limit price (required when orderType is "Limit").
- * @returns {Promise<string|number>} The Tradovate order ID.
- * @throws {Error} If the order placement fails.
+ * @param {"buy"|"sell"}     action   - Trade direction.
+ * @param {string}           contract - Resolved contract symbol, e.g. "MNQZ6".
+ * @param {number}           qty      - Contract count.
+ * @param {"Market"|"Limit"} orderType
+ * @param {number}           [price]  - Required for Limit orders.
+ * @returns {Promise<string|number>} Tradovate order id.
+ * @throws {Error} If placement fails.
  */
-async function placeOrder(action, ticker, qty, orderType, price) {
+async function placeOrder(action, contract, qty, orderType, price) {
+  if (!contract) throw new Error("placeOrder requires a resolved contract symbol");
+
   const token = await getAccessToken();
-  const symbol = CONTRACT_MAP[ticker];
-
-  if (!symbol) {
-    throw new Error(`Unsupported Tradovate ticker: ${ticker}`);
-  }
-
   const body = {
     accountId: Number(process.env.TRADOVATE_ACCOUNT_ID),
     action: action === "buy" ? "Buy" : "Sell",
-    symbol,
+    symbol: contract,
     orderQty: qty,
     orderType: orderType === "Limit" ? "Limit" : "Market",
+    isAutomated: true,
   };
-
   if (orderType === "Limit" && price !== undefined) {
-    body.price = price;
+    body.price = Number(price);
   }
 
   const response = await fetch(`${BASE_URL}/order/placeorder`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify(body),
   });
 
   if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(
-      `Tradovate placeOrder failed (${response.status}): ${errorBody}`
-    );
+    throw new Error(`Tradovate placeOrder failed (${response.status}): ${await response.text()}`);
   }
 
   const data = await response.json();
+  if (data.failureReason) {
+    throw new Error(`Tradovate rejected order: ${data.failureReason} ${data.failureText ?? ""}`.trim());
+  }
   return data.orderId ?? data.id;
 }
 
 /**
- * Close an open position for the given ticker by liquidating via Tradovate.
+ * Flatten an open position for a contract.
  *
- * @param {string} ticker - Instrument ticker (ES, NQ, GC).
- * @returns {Promise<string|number>} The liquidation order ID, or null if no position found.
+ * @param {string} contract - Resolved contract symbol, e.g. "MNQZ6".
+ * @returns {Promise<string|number|null>} Liquidation order id, or null when flat.
  * @throws {Error} If the API calls fail.
  */
-async function closePosition(ticker) {
+async function closePosition(contract) {
+  if (!contract) throw new Error("closePosition requires a resolved contract symbol");
+
   const token = await getAccessToken();
-  const symbol = CONTRACT_MAP[ticker];
-
-  if (!symbol) {
-    throw new Error(`Unsupported Tradovate ticker: ${ticker}`);
-  }
-
-  // Retrieve all open positions.
   const positionsResponse = await fetch(`${BASE_URL}/position/list`, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
 
   if (!positionsResponse.ok) {
-    const errorBody = await positionsResponse.text();
     throw new Error(
-      `Tradovate position/list failed (${positionsResponse.status}): ${errorBody}`
+      `Tradovate position/list failed (${positionsResponse.status}): ${await positionsResponse.text()}`
     );
   }
 
   const positions = await positionsResponse.json();
   const position = Array.isArray(positions)
-    ? positions.find((p) => p.contractId && p.symbol === symbol)
+    ? positions.find((p) => p.contractId && p.symbol === contract && p.netPos !== 0)
     : null;
 
-  if (!position) {
-    // No open position — nothing to close.
-    return null;
-  }
+  if (!position) return null;
 
-  const liquidateResponse = await fetch(
-    `${BASE_URL}/order/liquidateposition`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        accountId: Number(process.env.TRADOVATE_ACCOUNT_ID),
-        contractId: position.contractId,
-        admin: false,
-      }),
-    }
-  );
+  const liquidateResponse = await fetch(`${BASE_URL}/order/liquidateposition`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      accountId: Number(process.env.TRADOVATE_ACCOUNT_ID),
+      contractId: position.contractId,
+      admin: false,
+    }),
+  });
 
   if (!liquidateResponse.ok) {
-    const errorBody = await liquidateResponse.text();
     throw new Error(
-      `Tradovate liquidateposition failed (${liquidateResponse.status}): ${errorBody}`
+      `Tradovate liquidateposition failed (${liquidateResponse.status}): ${await liquidateResponse.text()}`
     );
   }
 
-  const liquidateData = await liquidateResponse.json();
-  return liquidateData.orderId ?? liquidateData.id;
+  const data = await liquidateResponse.json();
+  return data.orderId ?? data.id;
 }
 
-export { placeOrder, closePosition };
+/** Test seam — clears the cached token. */
+function _resetTokenCache() {
+  tokenCache = { accessToken: null, expiry: 0 };
+  pendingTokenRequest = null;
+}
+
+export { placeOrder, closePosition, _resetTokenCache };
