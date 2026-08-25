@@ -339,3 +339,33 @@ curl -X POST https://<your-vercel-domain>/api/kill \
 
 - **Kill switch** — use `POST /api/kill` to instantly halt all automated
   trading during unexpected market events or system issues.
+
+---
+
+## LangChain Multi-Agent Analysis Integration
+
+The `analysis/` Python module adds AI-powered technical, market structure,
+sentiment, and fundamental analysis for ES, NQ, and YM futures.
+
+### New endpoint: `/api/analyze`
+
+| Method | Usage |
+|--------|-------|
+| `GET`  | Manual analysis (returns JSON, no trade) |
+| `POST` | Analysis with optional auto-trade forwarding |
+
+### Quick start
+
+```bash
+# Install Python dependencies
+pip install -r analysis/requirements.txt
+
+# Manual analysis via API
+curl "https://<your-vercel-domain>/api/analyze?symbol=ES&timeframe=1h"
+
+# Run Python module directly
+python -m analysis.main --symbol NQ --timeframe 15m --skip-fundamental --skip-sentiment
+```
+
+See **[ANALYSIS.md](../ANALYSIS.md)** for the full architecture guide,
+agent descriptions, configuration options, and customisation instructions.

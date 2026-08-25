@@ -1,0 +1,76 @@
+{
+  "symbol": "NQ",
+  "timeframe": "15m",
+  "timestamp": "2024-11-01T14:15:00Z",
+  "consensus_bias": "bearish",
+  "confidence": 0.68,
+  "agents": [
+    {
+      "agent": "technical_analyst",
+      "bias": "bearish",
+      "confidence": 0.74,
+      "signals": [
+        "RSI at 71 – overbought, potential reversal signal",
+        "MACD bearish divergence: price made new high, MACD histogram declining",
+        "Bearish engulfing candle on last bar",
+        "Price above upper Bollinger Band – mean-reversion setup",
+        "Stochastic K=82, D=79 – overbought crossover forming"
+      ],
+      "key_levels": {
+        "support": [19850.0, 19720.0, 19600.0],
+        "resistance": [20050.0, 20200.0]
+      },
+      "analysis": "NQ shows classic overbought reversal signals on the 15m chart. RSI hit 71 – overbought – while MACD histogram is declining (bearish divergence). A bearish engulfing candle closed outside the upper Bollinger Band, a statistical mean-reversion trigger. Stochastic is turning down from 82. Momentum is fading despite price making a marginal new high."
+    },
+    {
+      "agent": "market_structure_analyst",
+      "bias": "neutral",
+      "confidence": 0.55,
+      "structure": "uptrend",
+      "signals": [
+        "Uptrend structure intact but showing signs of exhaustion",
+        "Last swing high at 20040 created a weak higher high (small margin)",
+        "Potential distribution pattern forming near 20000"
+      ],
+      "key_levels": {
+        "support": [19850.0, 19720.0],
+        "resistance": [20040.0, 20200.0]
+      },
+      "analysis": "Macro structure is still an uptrend on the 15m, but the most recent higher high was marginal (+15 points above prior high). The consolidation range between 19950 and 20040 suggests distribution. A break below 19850 (prior swing low) would confirm a trend change to bearish."
+    },
+    {
+      "agent": "sentiment_analyst",
+      "bias": "neutral",
+      "sentiment": "neutral",
+      "confidence": 0.50,
+      "signals": [
+        "VIX at 16.5 – slightly elevated, mild caution",
+        "Tech sector rotation out of mega-cap into small-cap noted intraday"
+      ],
+      "analysis": "Sentiment is neutral-to-cautious. VIX at 16.5 is slightly above the complacency threshold. Intraday sector rotation out of mega-cap tech (heaviest weighting in NQ) is a short-term headwind."
+    },
+    {
+      "agent": "fundamental_analyst",
+      "bias": "neutral",
+      "backdrop": "uncertain",
+      "confidence": 0.50,
+      "signals": [
+        "No major economic release in the next 2 hours",
+        "Fed speakers scheduled at 15:00 ET – headline risk"
+      ],
+      "analysis": "No imminent macro catalyst for the next 2 hours. A Fed speaker at 15:00 ET creates potential headline risk. Neutral fundamental stance for the 15m timeframe."
+    }
+  ],
+  "key_levels": {
+    "support": [19850.0, 19720.0, 19600.0],
+    "resistance": [20040.0, 20050.0, 20200.0]
+  },
+  "trading_signal": {
+    "action": "sell",
+    "entry": 20010.0,
+    "stop_loss": 20060.0,
+    "take_profit": 19910.0,
+    "risk_reward": 2.0
+  },
+  "reasoning": "Technical analyst is bearish (overbought RSI + MACD divergence + bearish engulfing outside Bollinger Band) with high confidence. Market structure is neutral but showing exhaustion near the 20000 level. Sentiment is cautious. Combined confidence of 68% exceeds the 65% threshold. Sell at market near 20010, stop above the last swing high at 20060 (50-point risk), targeting 19910 (100-point reward, 2:1 R/R)."
+}
