@@ -6,3 +6,4 @@ dist/
 .env.local
 .env.production
 .commitmsg.tmp 
+*.local.txt
