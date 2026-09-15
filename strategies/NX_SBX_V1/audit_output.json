@@ -1,0 +1,62 @@
+{
+  "be_tolerance_usd": 10.0,
+  "runs": {
+    "A": {
+      "csv_rows": 0,
+      "exit_rows": 0,
+      "positions": 0,
+      "pf_all": null,
+      "pf_is": null,
+      "pf_oos": null,
+      "be_count": 0,
+      "wins": 0,
+      "losses": 0,
+      "net": 0.0,
+      "panel": {
+        "profitFactor": null,
+        "totalClosedTrades": 0,
+        "positions_table": 0,
+        "netProfit": 0
+      },
+      "verdict": "MATCH"
+    },
+    "B": {
+      "csv_rows": 0,
+      "exit_rows": 0,
+      "positions": 0,
+      "pf_all": null,
+      "pf_is": null,
+      "pf_oos": null,
+      "be_count": 0,
+      "wins": 0,
+      "losses": 0,
+      "net": 0.0,
+      "panel": {
+        "profitFactor": null,
+        "totalClosedTrades": 0,
+        "positions_table": 0,
+        "netProfit": 0
+      },
+      "verdict": "MATCH"
+    },
+    "C": {
+      "csv_rows": 0,
+      "exit_rows": 0,
+      "positions": 0,
+      "pf_all": null,
+      "pf_is": null,
+      "pf_oos": null,
+      "be_count": 0,
+      "wins": 0,
+      "losses": 0,
+      "net": 0.0,
+      "panel": {
+        "profitFactor": null,
+        "totalClosedTrades": 0,
+        "positions_table": 0,
+        "netProfit": 0
+      },
+      "verdict": "MATCH"
+    }
+  }
+}

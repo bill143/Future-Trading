@@ -1,0 +1,2 @@
+entry_time,exit_time,dir,contracts,entry_px,risk_pts,exits,reason,gross,commission,net,equity,bars_held
+2026-06-15 13:40:00-05:00,2026-06-15 14:30:00-05:00,LONG,2,30576.75,54.5,SL@30522.00x2,SL,-219.0,3.0,-222.0,49778.0,10

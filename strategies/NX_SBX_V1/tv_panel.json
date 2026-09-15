@@ -1,0 +1,99 @@
+{
+  "source": "TradingView Desktop 3.4.1.8194, Strategy Tester + reportData via CDP pipe bridge",
+  "symbol": "CME_MINI:MNQ1!",
+  "timeframe": "5",
+  "layout_tab": "https://www.tradingview.com/chart/7sq3y6WF/ (Unnamed, separate from SENTINEL's EdgeX Pulse Layout)",
+  "script": {
+    "name": "NX-SBX v1",
+    "scriptIdPart": "USER;95d51c682b4b42c991193889f4b17951",
+    "version": "1.0",
+    "saved_via": "pine-facade/save/new",
+    "compile_errors": "none",
+    "compile_warnings": [
+      "CW10015 barstate.islast without calc_on_every_tick (line 244)"
+    ]
+  },
+  "history": {
+    "bars_loaded": 21108,
+    "first_bar_utc": "2026-05-31T22:00:00Z",
+    "first_bar_epoch": 1780264800,
+    "tester_range": "May 31, 2026 - Sep 15, 2026",
+    "requestMoreDataAvailable_after_load": false
+  },
+  "bar_magnifier": "on (in_39 Use Bar Magnifier = true)",
+  "defaults_verified": {
+    "initial_capital": 50000,
+    "qty": 2,
+    "commission": "0.75 cash_per_contract",
+    "slippage_ticks": 1
+  },
+  "tester_text": "This report requires trade data. The strategy report appears after the script makes even one trade.",
+  "on_chart_table": {
+    "Positions": [
+      0,
+      0,
+      0
+    ],
+    "Wins": [
+      0,
+      0,
+      0
+    ],
+    "Losses": [
+      0,
+      0,
+      0
+    ],
+    "Breakeven": [
+      0,
+      0,
+      0
+    ],
+    "Win %": null,
+    "Net $": [
+      0,
+      0,
+      0
+    ],
+    "Profit Factor": null,
+    "GATE": "FAIL",
+    "columns": [
+      "IS",
+      "OOS",
+      "ALL"
+    ]
+  },
+  "runs": {
+    "A": {
+      "direction": "Both",
+      "netProfit": 0,
+      "grossProfit": 0,
+      "grossLoss": 0,
+      "profitFactor": null,
+      "totalClosedTrades": 0,
+      "maxDrawdown": 0,
+      "positions_table": 0
+    },
+    "B": {
+      "direction": "Short Only",
+      "netProfit": 0,
+      "grossProfit": 0,
+      "grossLoss": 0,
+      "profitFactor": null,
+      "totalClosedTrades": 0,
+      "maxDrawdown": 0,
+      "positions_table": 0
+    },
+    "C": {
+      "direction": "Long Only",
+      "netProfit": 0,
+      "grossProfit": 0,
+      "grossLoss": 0,
+      "profitFactor": null,
+      "totalClosedTrades": 0,
+      "maxDrawdown": 0,
+      "positions_table": 0
+    }
+  },
+  "csv_export_note": "TradingView's List of Trades export is disabled with zero trades; trades_A/B/C.csv carry the export header only."
+}
