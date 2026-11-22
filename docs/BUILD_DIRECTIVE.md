@@ -103,10 +103,11 @@ in `public/strategies/` (verified 1:1). `public/screenshots/` holds the
 gallery images.
 
 Also present, as-is: `server/README.md` (setup guide for the webhook — partly
-stale, see Non-negotiables), `AI-COMMAND-CENTER-RESEARCH.md` (a standalone
-research memo on AI dashboard platforms with no implementation in this repo),
-and ~26 root-level `.png` chart screenshots duplicated in
-`public/screenshots/`.
+stale, see Non-negotiables). The 26 chart screenshots live only in
+`public/screenshots/`; their byte-identical root duplicates have been removed.
+The `AI-COMMAND-CENTER-RESEARCH.md` memo that once sat at the root has been
+relocated to its own repository (`bill143/JARVIS_2.0`, `docs/research/`), where
+it belongs; it no longer lives here.
 
 ## Non-negotiables
 
