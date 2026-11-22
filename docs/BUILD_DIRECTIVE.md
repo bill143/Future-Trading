@@ -27,9 +27,9 @@ broker is a gate that can refuse.
 
 - Signal generation. Signals originate in TradingView Pine scripts (or,
   in the intended future, the SENTINEL engine at `C:\dev\trading\SENTINEL`).
-  This repo analyses nothing and predicts nothing — the `ai-*` files at the
-  root are Pine scripts, not an ML system, and `ai-prediction` is a single
-  Pine file, not a code directory.
+  This repo analyses nothing and predicts nothing — the `ai-*` files in
+  `public/strategies/` are Pine scripts, not an ML system, and `ai-prediction`
+  is a single Pine file, not a code directory.
 - Wiring live execution. Per `CLAUDE.md`: not deployed to Vercel, Upstash not
   provisioned, nothing connected — and it must not be connected without an
   explicit instruction from Bill.
@@ -38,9 +38,8 @@ broker is a gate that can refuse.
   never originate a signal (`CLAUDE.md`, "Relationship to SENTINEL").
 - Cleaning or curating the Pine collection. The 54 scripts (49 `.txt` + 5
   extensionless: `ai-prediction`, `es-futures`, `futures-2024`, `nq-future`,
-  `price_action`) exist twice — repo root and `public/strategies/` — and
-  `CLAUDE.md` explicitly warns not to assume the root copies are
-  authoritative.
+  `price_action`) now live only in `public/strategies/`; their byte-identical
+  root duplicates have been removed. Leave the collection's contents as-is.
 
 ## Environment
 
