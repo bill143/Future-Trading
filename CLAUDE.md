@@ -154,9 +154,14 @@ casual review because they read as correct.
 
 ## Repo layout warning
 
-Roughly 120 loose `.txt` Pine scripts and `.png` screenshots are duplicated at
-the repo root **and** in `public/`. Two copies of everything. Not yet cleaned up
-— don't assume the root copies are authoritative.
+The strategy Pine scripts and screenshots were once duplicated at the repo root
+**and** in `public/` — two copies of everything. That duplication is now
+resolved: the canonical copies live under `public/strategies/` (and
+`public/screenshots/`), which is exactly what the app fetches
+(`/strategies/<file>` in `CodeViewer.jsx`). The root duplicates have been
+removed — the bulk `.txt`/`.png` set first, then the 5 extensionless Pine files
+(`ai-prediction`, `es-futures`, `futures-2024`, `nq-future`, `price_action`).
+Add new strategy assets under `public/strategies/`, not at the root.
 
 ---
 
